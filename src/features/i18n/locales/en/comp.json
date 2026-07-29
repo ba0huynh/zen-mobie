@@ -1,0 +1,67 @@
+{
+    "jobForm": {
+        "jobInfo": "Job information",
+        "contactNumber": {
+            "label": "Contact number",
+            "placeholder": "09123456789"
+        },
+        "description": {
+            "label": "Description",
+            "placeholder": "Enter description"
+        },
+        "title": {
+            "label": "Job title",
+            "placeholder": "Enter job title"
+        },
+        "noLocation": {
+            "title": "Please select a location",
+            "description": "Please select a location to continue",
+            "addLocation": "Add location"
+        }
+    },
+    "recurrenceForm": {
+        "label": "Recurrence",
+        "frequency": {
+            "label": "Frequency",
+            "daily": "Daily",
+            "weekly": "Weekly",
+            "monthly": "Monthly"
+        },
+        "interval": {
+            "label": "Interval"
+        },
+        "dayWeek": {
+            "label": "Day of week",
+            "monday": "Mon",
+            "tuesday": "Tue",
+            "wednesday": "Wed",
+            "thursday": "Thu",
+            "friday": "Fri",
+            "saturday": "Sat",
+            "sunday": "Sun"
+        },
+        "end": {
+            "label": "End",
+            "type": {
+                "never": "Never",
+                "count": "Count",
+                "until": "Until"
+            },
+            "count": {
+                "placeholder": "Enter count"
+            }
+        }
+    },
+    "recurrenceSelectSection": {
+        "noRecurrenceSelected":"No recurrence",
+        "summary": {
+            "every":"Every {{interval}}{{frequency}}{{suffix}}",
+            "byDay":"on {{dayWeek}}",
+            "everySingle":"every",
+            "end":{
+                "count":"for {{count}} occurrences",
+                "until":"until {{until}}"
+            }
+        }
+    }
+}

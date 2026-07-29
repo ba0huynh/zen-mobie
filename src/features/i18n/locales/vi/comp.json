@@ -1,0 +1,66 @@
+{
+    "jobForm": {
+        "jobInfo": "Thông tin công việc",
+        "contactNumber": {
+            "label": "Số điện thoại liên hệ",
+            "placeholder": "09123456789"
+        },
+        "description": {
+            "label": "Mô tả công việc",
+            "placeholder": "Mô tả công việc"
+        },
+        "title": {
+            "label": "Tiêu đề công việc",
+            "placeholder": "Tiêu đề công việc"
+        },
+        "noLocation": {
+            "title": "Vui lòng chọn vị trí",
+            "description": "Vui lòng chọn vị trí để tiếp tục",
+            "addLocation": "Thêm vị trí"
+        }
+    },
+    "recurrenceForm": {
+        "label": "Lặp lại",
+        "frequency": {
+            "label": "Lặp lại",
+            "daily": "Ngày",
+            "weekly": "Tuần",
+            "monthly": "Tháng"
+        },
+        "interval": {
+            "label": "Khoảng"
+        },
+        "dayWeek": {
+            "monday": "T2",
+            "tuesday": "T3",
+            "wednesday": "T4",
+            "thursday": "T5",
+            "friday": "T6",
+            "saturday": "T7",
+            "sunday": "CN"
+        },
+        "end": {
+            "label": "Kết thúc",
+            "type": {
+                "never": "Không kết thúc",
+                "count": "Số lần lặp",
+                "until": "Kết thúc vào ngày"
+            },
+            "count": {
+                "placeholder": "Số lần lặp"
+            }
+        }
+    },
+    "recurrenceSelectSection": {
+        "noRecurrenceSelected": "Không lặp lại",
+        "summary": {
+            "every": "Lặp lại {{interval}}{{frequency}}{{suffix}}",
+            "byDay": "vào {{dayWeek}}",
+            "everySingle":"hằng",
+            "end": {
+                "count": "Kết thúc sau {{count}} lần",
+                "until": "Kết thúc vào ngày {{until}}"
+            }
+        }
+    }
+}

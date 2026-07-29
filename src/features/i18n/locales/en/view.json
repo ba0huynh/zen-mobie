@@ -1,0 +1,64 @@
+{
+    "jobCreate": {
+        "success": {
+            "title": "Job created successfully",
+            "description": "Continue to create shift."
+        }
+    },
+    "jobAlert": {
+        "title": "Job alerts",
+        "subtitle": "Receive job notifications when it meet your criteria",
+        "radius": {
+            "label": "Radius: {{radius}} km"
+        },
+        "minimumPayment": {
+            "amount": {
+                "label": "Minimum payment",
+                "placeholder": "240.000k"
+            },
+            "hourly": {
+                "label": "Hourly rate",
+                "placeholder": "30.000k"
+            },
+            "title": "Minimum payment"
+        },
+        "alwaysAvailable": {
+            "title": "Always available",
+            "description": "Receive job notifications even if you haven't added a schedule."
+        },
+        "warning": {
+            "noLocation": "Please select a location",
+            "notificationDisabled": "Notification disabled",
+            "availabilityNotConfigured": "Availability not configured"
+        }
+    },
+    "shiftCreate": {
+        "addShift": "Add shift",
+        "success": {
+            "title": "Shift created successfully",
+            "description": "Add more shifts or go back."
+        },
+        "date": {
+            "section": "Date",
+            "label": "Date"
+        },
+        "shift": {
+            "section": "Shifts",
+            "item": "Shift {{number}}"
+        },
+        "startTime": {
+            "label": "Start time"
+        },
+        "endTime": {
+            "label": "End time"
+        },
+        "paymentAmount": {
+            "label": "Payment amount",
+            "placeholder": "240.000k"
+        },
+        "numberOfWorkers": {
+            "label": "Number of workers",
+            "placeholder": "10"
+        }
+    }
+}

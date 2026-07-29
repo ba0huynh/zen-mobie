@@ -1,0 +1,65 @@
+{
+    "jobCreate": {
+        "success": {
+            "title": "Tạo công việc thành công",
+            "description": "Tiếp tục tạo ca làm."
+        }
+    },
+    "jobAlert": {
+        "title": "Thông báo công việc",
+        "subtitle": "Nhận thông báo khi có công việc mới phù hợp với tiêu chí của bạn",
+        "radius": {
+            "label": "Bán kính: {{radius}} km"
+        },
+        "minimumPayment": {
+            "amount": {
+                "label": "Số tiền tối thiểu: {{amount}}",
+                "placeholder": "Số tiền tối thiểu"
+            },
+            "hourly": {
+                "label": "Tỷ giá giờ làm: {{hourly}}",
+                "placeholder": "Tỷ giá giờ làm"
+            },
+            "title": "Số tiền tối thiểu"
+        },
+        "alwaysAvailable": {
+            "title": "Luôn sẵn sàng",
+            "description": "Nhận thông báo công việc ngay cả khi bạn chưa thêm lịch rảnh."
+        },
+        "warning": {
+            "noLocation": "Vui lòng chọn vị trí",
+            "notificationDisabled": "Thông báo đã bị tắt",
+            "availabilityNotConfigured": "Luôn sẵn sàng chưa được thiết lập"
+        }
+    }
+    ,
+    "shiftCreate": {
+        "addShift":"Thêm ca làm việc",
+        "success":{
+            "title":"Ca làm việc đã được tạo thành công",
+            "description":"Tiếp tục tạo ca làm việc hoặc quay lại."
+        },
+        "date":{
+            "section":"Ngày làm việc",
+            "label":"Ngày làm việc"
+        },
+        "shift":{
+            "section":"Ca làm việc",
+            "item":"Ca {{number}}"
+        },
+        "startTime":{
+            "label":"Thời gian bắt đầu"
+        },
+        "endTime":{
+            "label":"Thời gian kết thúc"
+        },
+        "paymentAmount":{
+            "label":"Số tiền thanh toán",
+            "placeholder":"240.000k"
+        },
+        "numberOfWorkers":{
+            "label":"Số người làm việc",
+            "placeholder":"10"
+        }
+    }
+}
