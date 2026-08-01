@@ -4,7 +4,7 @@ import { MassageItemSchema } from "../massage.type";
 import api from "@/utils/api";
 
 async function getMassageList() {
-    return parseData(MassageItemSchema.array(), api.fetchJson(API_ROUTES.massage.route, { method: 'GET' }))
+    return parseData(MassageItemSchema.array(),await api.fetchJson(API_ROUTES.massage.route, { method: 'GET' }))
 }
 
 const massageApi = {

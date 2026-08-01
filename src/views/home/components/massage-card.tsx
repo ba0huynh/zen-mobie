@@ -1,146 +1,229 @@
-// components/massage-card.tsx
-import { StyleSheet} from "react-native";
-import View from "@/components/ui/view";
-import { MassageItemType } from "@/features/massage/massage.type";
-import Text from "@/components/ui/text";
-import Image from "@/components/ui/image";
-import Button from "@/components/ui/button";
+import { Colors, useTheme } from "@/hooks/theme.hook";
+import { ChevronDown, ChevronUp, Clock, Minus, Plus, Tag } from "lucide-react-native";
+import { memo, useState } from "react";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import type { Selection } from "../home-view.hook";
+export type PricingOption = { price: number; duration: number };
+export type MassageItem = {
+    id: string;
+    image: string;
+    pricing: PricingOption[];
+    name: string;
+    description: string;
+};
 
-const formatPrice = (price: number) =>
-    new Intl.NumberFormat("vi-VN").format(price) + "đ";
+interface MassageCardProps {
+    item: MassageItem;
+    selection: Selection;
+    onSelect: (itemId: string, pricingIndex: number) => void;
+    onDecrement: (itemId: string, pricingIndex: number) => void;
+}
 
-const formatDuration = (mins: number) =>
-    mins >= 60
-        ? mins % 60 === 0
-            ? `${mins / 60}h`
-            : `${Math.floor(mins / 60)}h${mins % 60}m`
-        : `${mins} mins`;
+function formatDuration(minutes: number) {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    const parts: string[] = [];
+    if (hours > 0) parts.push(`${hours} hour${hours > 1 ? "s" : ""}`);
+    if (mins > 0) parts.push(`${mins} minute${mins > 1 ? "s" : ""}`);
+    return parts.join(" ") || "0 minutes";
+}
 
-export default function MassageCard({
-    item,
-    selectedDuration,
-    onSelectDuration,
-    onPress,
-}: {
-    item: MassageItemType;
-    selectedDuration?: number;
-    onSelectDuration?: (duration: number) => void;
-    onPress?: () => void;
-}) {
+export function formatPrice(amount: number) {
+    return `₫${amount.toLocaleString("vi-VN")}`;
+}
+
+function MassageCard({ item, selection, onSelect, onDecrement }: MassageCardProps) {
+    const [expanded, setExpanded] = useState(true);
+    const ChevronIcon = expanded ? ChevronUp : ChevronDown;
+    const { colors } = useTheme();
+    
+    const styles = createStyles(colors);
+    
     return (
-        <Button onPress={onPress} style={styles.card}>
-            <View style={styles.header}>
-                <Image source={item.image} style={styles.image} />
-                <View style={styles.headerText}>
-                    <Text style={styles.name}>
-                        {item.name}
-                    </Text>
-                    <Text style={styles.description}>
-                        {item.description}
-                    </Text>
-                </View>
-            </View>
+        <View style={styles.card}>
+            <Pressable
+                style={styles.header}
+                onPress={() => setExpanded((prev) => !prev)}
+                hitSlop={8}
+            >
+                <Text style={styles.headerTitle}>{item.name}</Text>
+                <ChevronIcon size={18} color={colors.textSecondary} />
+            </Pressable>
 
-            <View style={styles.pricingRow}>
-                {item.pricing.map((p) => {
-                    const isSelected = selectedDuration === p.duration;
+            {expanded &&
+                item.pricing.map((option, index) => {
+                    const isLast = index === item.pricing.length - 1;
+                    const selectedQuantity = selection.find(
+                        (s) => s.itemId === item.id && s.pricingIndex === index
+                    )?.quantity ?? 0;
+
                     return (
-                        <Button
-                            key={p.duration}
-                            onPress={() => onSelectDuration?.(p.duration)}
-                            style={[
-                                styles.chip,
-                                isSelected && styles.chipSelected,
-                            ]}
+                        <View
+                            key={`${item.id}-${index}`}
+                            style={[styles.row, !isLast && styles.rowDivider]}
                         >
-                            <Text
-                                style={[
-                                    styles.chipDuration,
-                                    isSelected && styles.chipTextSelected,
-                                ]}
+                            <Pressable
+                                onPress={() => onSelect(item.id, index)}
+                                style={styles.rowMain}
+                                hitSlop={8}
                             >
-                                {formatDuration(p.duration)}
-                            </Text>
-                            <Text
-                                style={[
-                                    styles.chipPrice,
-                                    isSelected && styles.chipTextSelected,
-                                ]}
-                            >
-                                {formatPrice(p.price)}
-                            </Text>
-                        </Button>
+                                <Image source={{ uri: item.image }} style={styles.thumbnail} />
+
+                                <View style={styles.rowContent}>
+                                    <Text style={styles.optionTitle}>{option.duration} Mins</Text>
+
+                                    {index === 0 && !!item.description && (
+                                        <Text style={styles.description} numberOfLines={4}>
+                                            {item.description}
+                                        </Text>
+                                    )}
+
+                                    <View style={styles.metaRow}>
+                                        <Clock size={12} color={colors.textSecondary} />
+                                        <Text style={styles.metaText}>{formatDuration(option.duration)}</Text>
+                                        <Text style={styles.metaDot}>•</Text>
+                                        <Tag size={12} color={colors.textSecondary} />
+                                        <Text style={styles.metaText}>{formatPrice(option.price)}</Text>
+                                    </View>
+                                </View>
+                            </Pressable>
+
+                            <View style={styles.quantityControls}>
+                                {selectedQuantity > 0 && (
+                                    <Pressable
+                                        onPress={() => onDecrement(item.id, index)}
+                                        style={styles.quantityButton}
+                                        hitSlop={8}
+                                    >
+                                        <Minus size={14} color={colors.textPrimary} />
+                                    </Pressable>
+                                )}
+
+                                {selectedQuantity > 0 && (
+                                    <View style={styles.quantityBadge}>
+                                        <Text style={styles.quantityText}>{selectedQuantity}</Text>
+                                    </View>
+                                )}
+
+                                <Pressable
+                                    onPress={() => onSelect(item.id, index)}
+                                    style={[styles.quantityButton, styles.quantityButtonPrimary]}
+                                    hitSlop={8}
+                                >
+                                    <Plus size={14} color="#fff" />
+                                </Pressable>
+                            </View>
+                        </View>
                     );
                 })}
-            </View>
-        </Button>
+        </View>
     );
 }
 
-const styles = StyleSheet.create({
+export default memo(MassageCard);
+
+const createStyles = (colors: Colors) => StyleSheet.create({
     card: {
-        backgroundColor: "#1C1C1E",
-        borderRadius: 16,
-        padding: 14,
-        marginHorizontal: 16,
-        marginVertical: 8,
-        gap: 12,
+        backgroundColor: colors.surface,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: colors.border,
+        overflow: "hidden",
     },
     header: {
         flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        paddingHorizontal: 16,
+        paddingVertical: 14,
+    },
+    headerTitle: {
+        color: colors.textPrimary,
+        fontSize: 15,
+        fontWeight: "600",
+    },
+    row: {
+        flexDirection: "row",
+        alignItems: "flex-start",
+        gap: 12,
+        paddingHorizontal: 16,
+        paddingVertical: 14,
+    },
+    rowMain: {
+        flex: 1,
+        flexDirection: "row",
+        alignItems: "flex-start",
         gap: 12,
     },
-    image: {
-        width: 64,
-        height: 64,
-        borderRadius: 12,
-        backgroundColor: "#2C2C2E",
+    rowDivider: {
+        borderTopWidth: StyleSheet.hairlineWidth,
+        borderTopColor: colors.border,
     },
-    headerText: {
+    thumbnail: {
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        backgroundColor: colors.border,
+    },
+    rowContent: {
         flex: 1,
-        justifyContent: "center",
-        gap: 4,
+        gap: 6,
     },
-    name: {
-        color: "#FFFFFF",
-        fontSize: 16,
+    optionTitle: {
+        color: colors.textPrimary,
+        fontSize: 14,
         fontWeight: "600",
     },
     description: {
-        color: "#9B9BA1",
-        fontSize: 13,
+        color: colors.textSecondary,
+        fontSize: 12.5,
         lineHeight: 18,
     },
-    pricingRow: {
-        flexDirection: "row",
-        flexWrap: "wrap",
-        gap: 8,
-    },
-    chip: {
+    metaRow: {
         flexDirection: "row",
         alignItems: "center",
         gap: 6,
-        paddingVertical: 8,
-        paddingHorizontal: 12,
-        borderRadius: 10,
-        backgroundColor: "#2C2C2E",
+    },
+    metaText: {
+        color: colors.textSecondary,
+        fontSize: 12.5,
+    },
+    metaDot: {
+        color: colors.textSecondary,
+        fontSize: 12.5,
+    },
+    quantityControls: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 8,
+        marginTop: 2,
+    },
+    quantityButton: {
+        width: 28,
+        height: 28,
+        borderRadius: 14,
         borderWidth: 1,
-        borderColor: "#3A3A3C",
+        borderColor: colors.checkboxBorder,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: colors.surface,
     },
-    chipSelected: {
-        backgroundColor: "#7C3AED",
-        borderColor: "#7C3AED",
+    quantityButtonPrimary: {
+        backgroundColor: colors.accent,
+        borderColor: colors.accent,
     },
-    chipDuration: {
-        color: "#E5E5E5",
-        fontSize: 13,
-        fontWeight: "500",
+    quantityBadge: {
+        minWidth: 24,
+        paddingHorizontal: 6,
+        height: 24,
+        borderRadius: 12,
+        backgroundColor: colors.accent,
+        alignItems: "center",
+        justifyContent: "center",
     },
-    chipPrice: {
-        color: "#9B9BA1",
-        fontSize: 13,
-    },
-    chipTextSelected: {
-        color: "#FFFFFF",
+    quantityText: {
+        color: "#fff",
+        fontSize: 12,
+        fontWeight: "700",
     },
 });

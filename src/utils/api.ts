@@ -1,6 +1,10 @@
 type METHOD = "GET" | "POST" | "PUT" | "DELETE";
 type ARGS = { body?: any, method: METHOD };
 async function fetchApi(url: string, { body, method }: ARGS) {
+    console.log("===================================================================")
+    console.log(JSON.stringify({url, method, body}));
+    console.log("===================================================================")
+    
     const response = await fetch(url, {
         method,
         body: JSON.stringify(body),

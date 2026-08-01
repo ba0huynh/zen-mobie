@@ -1,6 +1,9 @@
 import { BookingType } from "@/entities/booking.entity";
+import { BookingMassageType } from "@/entities/booking_massage.entity";
 
-type PostBookingPayload = Pick<BookingType, 'massageId' | 'startTime' | 'phone' | 'price' | 'address' | 'duration'>
+type PostBookingPayload = Pick<BookingType, 'startTime' | 'phone' | 'note' | 'address'> & {
+    massages:  Pick<BookingMassageType,'price' | 'duration' | 'massageId'>[]
+} 
 
 type BookingApiTypes = {
     postBooking: { payload: PostBookingPayload },
