@@ -7,12 +7,18 @@ type BookingForm = BookingApiTypes['postBooking']['payload']
 export function useBookingView() {
     const selectedMassages = useBookingStore((state) => state.selectedMassages)
     const initialValue: BookingForm = {
-        startTime: '', phone: '', note: '', address: '', massages: selectedMassages
+        startTime: '', phone: '', note: '', address: '',
+        massages: selectedMassages.map(({ massageId, duration, price }) => ({
+            massageId,
+            duration,
+            price,
+        }))
     }
-    const { form, handleChange, isSubmiting } = useForm({
+    const { form, handleChange, handleSubmit, isSubmiting } = useForm({
         initialValue, onSubmit: async (form) => {
             await bookingApi.postBooking(form)
         },
+        watchAll: true,
     })
-    return { form, handleChange, isSubmiting }
+    return { form, handleChange, handleSubmit, isSubmiting, selectedMassages }
 }

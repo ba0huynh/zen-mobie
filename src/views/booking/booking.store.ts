@@ -1,10 +1,16 @@
 import { BookingMassageType } from "@/entities/booking_massage.entity"
 import { create } from "zustand"
 
-type BookingForm = {
-    selectedMassages: Pick<BookingMassageType, 'duration' | 'price' | 'massageId'>[]
+export type SelectedBookingMassage = Pick<BookingMassageType, "duration" | "price" | "massageId"> & {
+    name: string
 }
 
-export const useBookingStore = create<BookingForm>((set) => ({
+type BookingStore = {
+    selectedMassages: SelectedBookingMassage[]
+    setSelectedMassages: (selectedMassages: SelectedBookingMassage[]) => void
+}
+
+export const useBookingStore = create<BookingStore>((set) => ({
     selectedMassages: [],
+    setSelectedMassages: (selectedMassages) => set({ selectedMassages }),
 }))

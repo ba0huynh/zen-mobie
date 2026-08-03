@@ -8,11 +8,12 @@ type ObjectKeys<T> = {
     [K in keyof T]: T[K] extends object ? K : never
 }[keyof T];
 export default function useForm<F, E, V>
-    ({ watch = [], initialValue, onSubmit: onSubmitForm, errors: initialErrors = {} as E, validate }:
+    ({ watch = [],watchAll = false, initialValue, onSubmit: onSubmitForm, errors: initialErrors = {} as E, validate }:
         {
             initialValue: F, onSubmit: (form: F, args?: V) => Promise<void>, errors?: E,
             validate?: (form: F, vars?: V) => NoInfer<E> | void,
             watch?: (keyof F)[],
+            watchAll?: boolean,
             args?: V,
         }) {
     const formRef = useRef<F>(structuredClone(initialValue))
@@ -32,7 +33,7 @@ export default function useForm<F, E, V>
 
     function handleChange(key: keyof F, value: F[keyof F]) {
         formRef.current[key] = value
-        if (watch.includes(key)) {
+        if (watchAll || watch.includes(key)) {
             handleRender()
         }
     }

@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
-import { View as RNView, ViewStyle } from "react-native";
+import { View as RNView, StyleProp, ViewStyle } from "react-native";
 
-type Props ={ children: ReactNode, style?: ViewStyle }
+type Props = { children?: ReactNode, style?: StyleProp<ViewStyle> }
 
 export default function View({ children, style }: Props) {
     return (

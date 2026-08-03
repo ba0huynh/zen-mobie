@@ -1,8 +1,10 @@
-            import usePlatform from "@/hooks/platform.hook";
+import usePlatform from "@/hooks/platform.hook";
 import { Colors, useTheme } from "@/hooks/theme.hook";
 import { FlashList } from "@shopify/flash-list";
+import { router } from "expo-router";
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useBookingStore } from "../booking/booking.store";
 import MassageCard, { formatPrice } from "./components/massage-card";
 import useHomeView from "./home-view.hook";
 
@@ -19,7 +21,27 @@ export default function HomeView() {
     const { is } = usePlatform();
     const isWeb = is("web");
     const { colors } = useTheme();
+    const setSelectedMassages = useBookingStore((state) => state.setSelectedMassages);
     const styles = createStyles(colors);
+
+    const handleContinue = () => {
+        const bookingMassages = selection.flatMap((selectedItem) => {
+            const massage = massageList.find((item) => item.id === selectedItem.itemId);
+            const pricing = massage?.pricing[selectedItem.pricingIndex];
+
+            if (!massage || !pricing) return [];
+
+            return Array.from({ length: selectedItem.quantity }, () => ({
+                massageId: massage.id,
+                duration: pricing.duration,
+                price: pricing.price,
+                name: massage.name,
+            }));
+        });
+
+        setSelectedMassages(bookingMassages);
+        router.push("/booking");
+    };
 
     if (isLoading) {
         return (
@@ -62,6 +84,7 @@ export default function HomeView() {
                         </View>
                     )}
                     <Pressable
+                        onPress={handleContinue}
                         disabled={totalSelected === 0}
                         style={[styles.continueButton, totalSelected === 0 && styles.continueButtonDisabled]}
                     >
