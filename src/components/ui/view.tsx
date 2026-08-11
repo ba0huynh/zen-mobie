@@ -1,11 +1,15 @@
 import { ReactNode } from "react";
-import { View as RNView, StyleProp, ViewStyle } from "react-native";
+import { LayoutChangeEvent, View as RNView, StyleProp, ViewStyle } from "react-native";
 
-type Props = { children?: ReactNode, style?: StyleProp<ViewStyle> }
+type Props = {
+    children?: ReactNode,
+    style?: StyleProp<ViewStyle>,
+    onLayout?: (event: LayoutChangeEvent) => void,
+}
 
-export default function View({ children, style }: Props) {
+export default function View({ children, style, onLayout }: Props) {
     return (
-        <RNView style={style}>
+        <RNView style={style} onLayout={onLayout}>
             {children}
         </RNView>
     );

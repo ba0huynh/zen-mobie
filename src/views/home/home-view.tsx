@@ -1,4 +1,5 @@
-import usePlatform from "@/hooks/platform.hook";
+import BookingShell from "@/components/booking-shell";
+import BRAND from "@/constants/brand";
 import { Colors, useTheme } from "@/hooks/theme.hook";
 import { FlashList } from "@shopify/flash-list";
 import { router } from "expo-router";
@@ -18,8 +19,6 @@ export default function HomeView() {
         handleSelect,
         handleDecrement,
     } = useHomeView();
-    const { is } = usePlatform();
-    const isWeb = is("web");
     const { colors } = useTheme();
     const setSelectedMassages = useBookingStore((state) => state.setSelectedMassages);
     const styles = createStyles(colors);
@@ -52,18 +51,25 @@ export default function HomeView() {
     }
 
     return (
-        <SafeAreaView style={styles.container} edges={["top", "bottom"]}>
-            <View style={[styles.contentWrapper, isWeb && styles.contentWrapperWeb]}>
-                <View style={styles.pageHeader}>
-                    <Text style={styles.pageTitle}>Choose a service</Text>
-                    <Text style={styles.pageSubtitle}>Select a duration to continue booking.</Text>
+        <BookingShell
+            subtitle="Choose an appointment type."
+            aside={
+                <View style={styles.aside}>
+                    {BRAND.description.map((paragraph) => (
+                        <Text key={paragraph} style={styles.asideText}>
+                            {paragraph}
+                        </Text>
+                    ))}
                 </View>
-
+            }
+        >
+            <View style={styles.listFrame}>
                 <FlashList
                     data={massageList}
                     keyExtractor={(item) => item.id}
                     contentContainerStyle={styles.listContent}
-                    ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
+                    showsVerticalScrollIndicator={false}
+                    ItemSeparatorComponent={() => <View style={styles.separator} />}
                     renderItem={({ item }) => (
                         <MassageCard
                             item={item}
@@ -73,77 +79,72 @@ export default function HomeView() {
                         />
                     )}
                 />
-
-                <View style={styles.footer}>
-                    {totalSelected > 0 && (
-                        <View style={styles.summaryRow}>
-                            <Text style={styles.summaryText}>
-                                {totalSelected} service{totalSelected > 1 ? "s" : ""} selected
-                            </Text>
-                            <Text style={styles.summaryTotal}>{formatPrice(totalPrice)}</Text>
-                        </View>
-                    )}
-                    <Pressable
-                        onPress={handleContinue}
-                        disabled={totalSelected === 0}
-                        style={[styles.continueButton, totalSelected === 0 && styles.continueButtonDisabled]}
-                    >
-                        <Text style={styles.continueText}>Continue</Text>
-                    </Pressable>
-                </View>
             </View>
-        </SafeAreaView>
+
+            <View style={styles.footer}>
+                {totalSelected > 0 && (
+                    <View style={styles.summaryRow}>
+                        <Text style={styles.summaryText}>
+                            {totalSelected} service{totalSelected > 1 ? "s" : ""} selected
+                        </Text>
+                        <Text style={styles.summaryTotal}>{formatPrice(totalPrice)}</Text>
+                    </View>
+                )}
+
+                <Pressable
+                    onPress={handleContinue}
+                    disabled={totalSelected === 0}
+                    style={({ pressed }) => [
+                        styles.continueButton,
+                        totalSelected === 0 && styles.continueButtonDisabled,
+                        pressed && totalSelected > 0 && styles.continueButtonPressed,
+                    ]}
+                >
+                    <Text
+                        style={[
+                            styles.continueText,
+                            totalSelected === 0 && styles.continueTextDisabled,
+                        ]}
+                    >
+                        Continue
+                    </Text>
+                </Pressable>
+            </View>
+        </BookingShell>
     );
 }
 
 const createStyles = (colors: Colors) => StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: colors.background,
-    },
     centered: {
         flex: 1,
         backgroundColor: colors.background,
         alignItems: "center",
         justifyContent: "center",
     },
-    contentWrapper: {
-        flex: 1,
-        width: "100%",
+    aside: {
+        gap: 16,
     },
-    contentWrapperWeb: {
-        width: "50%",
-        alignSelf: "center",
-    },
-    pageHeader: {
-        paddingHorizontal: 16,
-        paddingTop: 8,
-        paddingBottom: 16,
-        gap: 4,
-    },
-    pageTitle: {
-        color: colors.textPrimary,
-        fontSize: 20,
-        fontWeight: "700",
-    },
-    pageSubtitle: {
+    asideText: {
         color: colors.textSecondary,
-        fontSize: 13,
+        fontSize: 14,
+        lineHeight: 21,
+    },
+    listFrame: {
+        flex: 1,
+        borderRadius: 14,
+        borderWidth: 1,
+        borderColor: colors.border,
+        backgroundColor: colors.background,
+        overflow: "hidden",
     },
     listContent: {
-        paddingHorizontal: 16,
-        paddingBottom: 96,
+        padding: 12,
+    },
+    separator: {
+        height: 12,
     },
     footer: {
-        position: "absolute",
-        left: 0,
-        right: 0,
-        bottom: 0,
-        padding: 16,
-        gap: 10,
-        backgroundColor: colors.background,
-        borderTopWidth: StyleSheet.hairlineWidth,
-        borderTopColor: colors.border,
+        gap: 12,
     },
     summaryRow: {
         flexDirection: "row",
@@ -156,21 +157,28 @@ const createStyles = (colors: Colors) => StyleSheet.create({
     },
     summaryTotal: {
         color: colors.textPrimary,
-        fontSize: 15,
+        fontSize: 16,
         fontWeight: "700",
     },
     continueButton: {
         backgroundColor: colors.accent,
-        borderRadius: 12,
-        paddingVertical: 14,
+        borderRadius: 999,
+        paddingVertical: 18,
         alignItems: "center",
+        justifyContent: "center",
     },
     continueButtonDisabled: {
         backgroundColor: colors.accentDisabled,
     },
+    continueButtonPressed: {
+        opacity: 0.85,
+    },
     continueText: {
-        color: "#fff",
-        fontSize: 15,
+        color: "#FFFFFF",
+        fontSize: 16,
         fontWeight: "600",
+    },
+    continueTextDisabled: {
+        color: colors.textSecondary,
     },
 });

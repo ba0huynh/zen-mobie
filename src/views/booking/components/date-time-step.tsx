@@ -11,8 +11,8 @@ type DateTimeStepProps = {
     onContinue: () => void;
     /** How many upcoming days to list in the agenda view. */
     daysAhead?: number;
-    /** Minimum number of hours from now before a slot can be booked. */
-    leadTimeHours?: number;
+    /** Minimum notice, in minutes, before a slot can be booked. */
+    leadTimeMinutes?: number;
     /** Business hours, 24h clock. */
     startHour?: number;
     endHour?: number;
@@ -62,10 +62,10 @@ function weekLabelFor(weekStart: Date, todayWeekStart: Date) {
 
 function buildSlotsForDay(
     day: Date,
-    opts: Required<Pick<DateTimeStepProps, "startHour" | "endHour" | "slotMinutes" | "leadTimeHours">>
+    opts: Required<Pick<DateTimeStepProps, "startHour" | "endHour" | "slotMinutes" | "leadTimeMinutes">>
 ) {
-    const { startHour, endHour, slotMinutes, leadTimeHours } = opts;
-    const earliestBookable = new Date(Date.now() + leadTimeHours * 60 * 60 * 1000);
+    const { startHour, endHour, slotMinutes, leadTimeMinutes } = opts;
+    const earliestBookable = new Date(Date.now() + leadTimeMinutes * 60 * 1000);
     const slots: Date[] = [];
 
     const cursor = new Date(day);
@@ -88,7 +88,7 @@ export default function DateTimeStep({
     onChange,
     onContinue,
     daysAhead = 14,
-    leadTimeHours = 2,
+    leadTimeMinutes = 90,
     startHour = 9,
     endHour = 21,
     slotMinutes = 30,
@@ -106,10 +106,10 @@ export default function DateTimeStep({
             .map((day) => ({
                 day,
                 weekStart: getWeekStart(day),
-                slots: buildSlotsForDay(day, { startHour, endHour, slotMinutes, leadTimeHours }),
+                slots: buildSlotsForDay(day, { startHour, endHour, slotMinutes, leadTimeMinutes }),
             }))
             .filter(({ slots }) => slots.length > 0);
-    }, [anchorDay, startHour, endHour, slotMinutes, leadTimeHours]);
+    }, [anchorDay, startHour, endHour, slotMinutes, leadTimeMinutes]);
 
     const monthLabel = (mode === "agenda" ? anchorDay : monthCursor).toLocaleDateString(undefined, {
         month: "long",
@@ -315,23 +315,16 @@ export default function DateTimeStep({
 }
 
 const createStyles = (colors: Colors) => StyleSheet.create({
+    // Chrome (border, background, max width) comes from the surrounding BookingShell panel.
     container: {
+        flex: 1,
         width: "100%",
-        maxWidth: 480,
-        alignSelf: "center",
-        borderRadius: 14,
-        backgroundColor: colors.surface,
-        borderWidth: 1,
-        borderColor: colors.border,
-        overflow: "hidden",
     },
     header: {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        paddingHorizontal: 16,
-        paddingTop: 14,
-        paddingBottom: 10,
+        paddingBottom: 12,
     },
     todayButton: {
         borderWidth: 1,
@@ -366,10 +359,10 @@ const createStyles = (colors: Colors) => StyleSheet.create({
         backgroundColor: colors.border,
     },
     agendaScroll: {
-        maxHeight: 460,
+        flex: 1,
     },
     agendaContent: {
-        padding: 16,
+        paddingVertical: 16,
         gap: 18,
     },
     weekLabel: {
@@ -426,8 +419,8 @@ const createStyles = (colors: Colors) => StyleSheet.create({
         flexGrow: 0,
         borderWidth: 1,
         borderColor: colors.accent,
-        borderRadius: 10,
-        paddingVertical: 10,
+        borderRadius: 999,
+        paddingVertical: 13,
         alignItems: "center",
     },
     slotPillSelected: {
@@ -435,14 +428,14 @@ const createStyles = (colors: Colors) => StyleSheet.create({
     },
     slotPillText: {
         color: colors.textPrimary,
-        fontSize: 13,
+        fontSize: 15,
         fontWeight: "600",
     },
     slotPillTextSelected: {
         color: "#fff",
     },
     monthContent: {
-        padding: 16,
+        paddingVertical: 16,
         gap: 10,
     },
     weekdayRow: {
@@ -515,11 +508,10 @@ const createStyles = (colors: Colors) => StyleSheet.create({
         fontWeight: "600",
     },
     continueButton: {
-        margin: 16,
-        marginTop: 0,
+        marginTop: 16,
         backgroundColor: colors.accent,
-        borderRadius: 12,
-        paddingVertical: 14,
+        borderRadius: 999,
+        paddingVertical: 16,
         alignItems: "center",
     },
     continueButtonText: {
