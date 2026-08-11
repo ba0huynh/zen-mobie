@@ -1,6 +1,4 @@
 import Checkbox from "@/components/ui/checkbox";
-import DayPicker, { isSameDay, startOfDay } from "@/components/ui/day-picker";
-import TimeSlotPicker from "@/components/ui/time-slot-picker";
 import Input from "@/components/ui/input";
 import View from "@/components/ui/view";
 import { Colors, useTheme } from "@/hooks/theme.hook";
@@ -8,37 +6,26 @@ import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text } from "react-native";
 import { formatPrice } from "../home/components/massage-card";
 import { useBookingView } from "./booking-view.hook";
-import { Calendar, Clock, Tag } from "lucide-react-native";
+import { Calendar, ChevronRight, Clock, Tag } from "lucide-react-native";
+import DateTimeStep from "./components/date-time-step";
 
 type TherapistGender = "male" | "female" | "either";
+type BookingStep = "datetime" | "details";
 
 export default function BookingView() {
     const { form, handleChange, handleSubmit, isSubmiting, selectedMassages } = useBookingView()
     const { colors } = useTheme()
     const styles = createStyles(colors)
 
-    const [selectedDay, setSelectedDay] = useState<Date | null>(
-        form.startTime ? startOfDay(new Date(form.startTime)) : null
-    )
-    const [selectedTime, setSelectedTime] = useState<Date | null>(
-        form.startTime ? new Date(form.startTime) : null
-    )
+    // Date & time is now its own step (like the reference booking widget): pick a
+    // slot first, then move on to contact details / preferences / policy.
+    const [step, setStep] = useState<BookingStep>(form.startTime ? "details" : "datetime")
 
     // Not part of the form hook yet — lift these up into useBookingView once the backend supports them.
     const [therapistGender, setTherapistGender] = useState<TherapistGender | null>(null)
     const [agreedToPolicy, setAgreedToPolicy] = useState(false)
 
-    const handleDayChange = (day: Date) => {
-        setSelectedDay(day)
-        // A time picked for a different day may no longer be valid (or may now be
-        // in the past if the new day is today) — clear it and make the user re-pick.
-        if (!selectedDay || !isSameDay(day, selectedDay)) {
-            setSelectedTime(null)
-        }
-    }
-
-    const handleTimeChange = (time: Date) => {
-        setSelectedTime(time)
+    const handleDateTimeChange = (time: Date) => {
         handleChange("startTime", time.toISOString())
     }
 
@@ -67,12 +54,27 @@ export default function BookingView() {
 
     const canSubmit = !isSubmiting && groupedMassages.length > 0 && agreedToPolicy && !!form.startTime
 
+    if (step === "datetime") {
+        return (
+            <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+                <View style={styles.accentBar} />
+                <Text style={styles.pageTitle}>Choose date & time</Text>
+
+                <DateTimeStep
+                    value={form.startTime ? new Date(form.startTime) : null}
+                    onChange={handleDateTimeChange}
+                    onContinue={() => setStep("details")}
+                />
+            </ScrollView>
+        )
+    }
+
     return (
         <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
             <View style={styles.accentBar} />
             <Text style={styles.pageTitle}>Confirm Booking</Text>
 
-            <View style={styles.card}>
+            <Pressable style={styles.card} onPress={() => setStep("datetime")}>
                 <View style={styles.cardHeaderRow}>
                     <Calendar size={16} color={colors.textSecondary} />
                     <Text style={styles.cardHeaderText}>
@@ -85,12 +87,25 @@ export default function BookingView() {
                             })
                             : "Select a date"}
                     </Text>
+                    <View style={styles.cardHeaderSpacer} />
+                    <ChevronRight size={16} color={colors.textSecondary} />
                 </View>
+
+                {form.startTime ? (
+                    <View style={styles.metaRow}>
+                        <Clock size={14} color={colors.textSecondary} />
+                        <Text style={styles.metaText}>
+                            {new Date(form.startTime).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })}
+                            {"  ·  tap to change"}
+                        </Text>
+                    </View>
+                ) : null}
 
                 {groupedMassages.length === 0 ? (
                     <Text style={styles.emptyText}>No services selected yet.</Text>
                 ) : (
                     <>
+                        <View style={styles.divider} />
                         {groupedMassages.map((massage, index) => (
                             <View key={`${massage.massageId}-${massage.duration}-${index}`} style={styles.summaryRow}>
                                 <View style={styles.summaryContent}>
@@ -118,19 +133,7 @@ export default function BookingView() {
                         </View>
                     </>
                 )}
-            </View>
-
-            <View style={styles.card}>
-                <Text style={styles.sectionTitle}>Choose a day</Text>
-                <DayPicker value={selectedDay} onChange={handleDayChange} />
-            </View>
-
-            {selectedDay ? (
-                <View style={styles.card}>
-                    <Text style={styles.sectionTitle}>Choose a time</Text>
-                    <TimeSlotPicker day={selectedDay} value={selectedTime} onChange={handleTimeChange} />
-                </View>
-            ) : null}
+            </Pressable>
 
             <View style={styles.card}>
                 <Text style={styles.sectionTitle}>Contact details</Text>
@@ -224,6 +227,9 @@ const createStyles = (colors: Colors) => StyleSheet.create({
     content: {
         padding: 16,
         gap: 14,
+        width: "100%",
+        maxWidth: 480,
+        alignSelf: "center",
     },
     accentBar: {
         height: 4,
@@ -253,6 +259,9 @@ const createStyles = (colors: Colors) => StyleSheet.create({
         color: colors.textPrimary,
         fontSize: 15,
         fontWeight: "700",
+    },
+    cardHeaderSpacer: {
+        flex: 1,
     },
     sectionTitle: {
         color: colors.textPrimary,

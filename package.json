@@ -44,10 +44,12 @@
   },
   "scripts": {
     "start": "expo start",
-    "reset-project": "node ./scripts/reset-project.js",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
+    "export:web": "expo export --web",
+    "deploy:web": "eas deploy",
+    "deploy:web-prod": "eas deploy --prod",
     "lint": "expo lint"
   },
   "private": true
