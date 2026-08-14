@@ -1,3 +1,4 @@
+import Image from "@/components/ui/image";
 import BRAND from "@/constants/brand";
 import { Colors, useTheme } from "@/hooks/theme.hook";
 import { ReactNode } from "react";
@@ -43,8 +44,7 @@ export default function BookingShell({
 
     const logo = (
         <View style={[styles.logo, !showLargeLogo && styles.logoNarrow]}>
-            <Text style={[styles.logoMark, !showLargeLogo && styles.logoMarkNarrow]}>{BRAND.mark}</Text>
-            {showLargeLogo && <Text style={styles.logoCaption}>{BRAND.caption}</Text>}
+            <Image source={BRAND.logo} style={styles.logoImage} />
         </View>
     );
 
@@ -154,31 +154,18 @@ const createStyles = (colors: Colors) => StyleSheet.create({
         width: 128,
         height: 128,
         borderRadius: 64,
-        backgroundColor: "#FFFFFF",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 2,
+        // Shown while the remote image loads, and it matches the logo's own field.
+        backgroundColor: colors.accent,
+        overflow: "hidden",
     },
     logoNarrow: {
         width: 44,
         height: 44,
         borderRadius: 22,
     },
-    logoMark: {
-        color: "#1A1A1A",
-        fontSize: 26,
-        fontWeight: "700",
-        letterSpacing: 4,
-    },
-    logoMarkNarrow: {
-        fontSize: 13,
-        letterSpacing: 1,
-    },
-    logoCaption: {
-        color: "#6B6B6B",
-        fontSize: 8,
-        fontWeight: "600",
-        letterSpacing: 2,
+    logoImage: {
+        width: "100%",
+        height: "100%",
     },
     brandText: {
         gap: 12,

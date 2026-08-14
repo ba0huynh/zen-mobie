@@ -1,10 +1,7 @@
-/**
- * Branding shown in the booking widget's left-hand panel.
- * Swap `mark`/`caption` for an <Image> once a logo asset lands in assets/.
- */
+/** Branding shown in the booking widget's left-hand panel. */
 const BRAND = {
-    mark: "ZEN",
-    caption: "SPA & WELLNESS",
+    /** Square wordmark on a purple field — it fills the logo circle edge to edge. */
+    logo: "https://pub-bdd13f78456a4dddbbf271bbb3f2e606.r2.dev/2HGb6F3vUNWzIq4Lpl0Dh8vjyX7A81lOtKpk.jpg",
     title: "Zen Online Booking System - Sedona Suites Saigon",
     description: [
         "Sedona Suites Saigon and Zen Tech Asia have joined forces to bring you an exclusive wellness booking system designed to supercharge your journey to well-being.",
